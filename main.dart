@@ -18,9 +18,8 @@ class WebSocketCliente {
     try {
       final uri = Uri.parse(endpoint);
 
-      // _channel = IOWebSocketChannel.connect(uri, headers: headers);
-      // _channel = IOWebSocketChannel.connect(uri, headers: headers);
       print('Conectando a $endpoint con headers $headers');
+
       _channel = IOWebSocketChannel.connect(uri, headers: headers);
       await _channel.ready;
 
@@ -61,11 +60,9 @@ class Interface {
 
     var endpoint = stdin.readLineSync();
 
-    print('ingresar header (omita este paso si no es necesario):');
+    print('Ingresar header (omita este paso si no es necesario):');
 
     var headers = stdin.readLineSync();
-
-    print("eso es headers ${headers} ${headers.runtimeType}");
 
     if (Validator.presence(endpoint) && Validator.headers(headers)) {
       websocket = WebSocketCliente();
@@ -122,7 +119,6 @@ class Validator {
 
       return true;
     } catch (e) {
-      print('error $e');
       return false;
     }
   }
