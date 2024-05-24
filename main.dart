@@ -4,8 +4,6 @@ import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 void main() {
-  print('hello and goodbye');
-
   Interface interfaz = Interface();
 
   interfaz.start();
@@ -22,11 +20,9 @@ class WebSocketCliente {
 
       // _channel = IOWebSocketChannel.connect(uri, headers: headers);
       // _channel = IOWebSocketChannel.connect(uri, headers: headers);
-      print('el uri es $uri');
-      _channel = IOWebSocketChannel.connect(uri);
-      print('pase la conexion, se prepara par aocnectar');
+      print('Conectando a $endpoint con headers $headers');
+      _channel = IOWebSocketChannel.connect(uri, headers: headers);
       await _channel.ready;
-      print('se conecto');
 
       _channel.stream.listen(
         (message) {
@@ -36,7 +32,8 @@ class WebSocketCliente {
           print('---> FINALIZO CONEXION <----');
         },
         onError: (error, stackTrace) {
-          print('ERRRORRRRRR: $error');
+          print('Hubo un error inesperado: $error');
+          exit(0);
         },
         cancelOnError: true,
       );
@@ -48,19 +45,23 @@ class WebSocketCliente {
   }
 
   void message(String newMessage) {
-    _channel.sink.add('Hollaaaaaaaaaa envio');
-    print('se envio mensaje');
+    _channel.sink.add(newMessage);
+    print('ENVIADO');
+  }
+
+  void close() {
+    _channel.sink.close();
   }
 }
 
 class Interface {
   late WebSocketCliente websocket;
   void start() async {
-    print('Cliente WebSocketCliente \n ingresar endpoint');
+    print('Cliente WebSocketCliente \nIngresar endpoint:');
 
     var endpoint = stdin.readLineSync();
 
-    print('ingresar header (omita este paso si no es necesario)');
+    print('ingresar header (omita este paso si no es necesario):');
 
     var headers = stdin.readLineSync();
 
@@ -75,9 +76,10 @@ class Interface {
       );
 
       if (connect) {
-        print('conectado');
+        print(
+            'Se ha conectado correctamente, para salir del programa escriba "exit"');
 
-        websocket.message('newMessage');
+        sendMessage();
       } else {
         print(
             'Upsss... hubo un error de conexión, verifique url y conexion de internet');
@@ -87,6 +89,20 @@ class Interface {
       print('Link y/o header no valido');
       start();
     }
+  }
+
+  void sendMessage() async {
+    print('Ingresa un mensaje');
+    String? newMessage = stdin.readLineSync();
+    if (newMessage == 'exit') {
+      websocket.close();
+      print('Saliendo del programa...');
+      exit(0);
+    }
+
+    websocket.message(newMessage!);
+    await Future.delayed(Duration(seconds: 3));
+    sendMessage();
   }
 }
 
