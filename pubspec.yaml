@@ -1,0 +1,9 @@
+name: mi_proyecto
+description: Una breve descripción de tu proyecto
+version: 1.0.0
+
+environment:
+  sdk: '>=2.14.0 <3.0.0'
+
+dependencies:
+  web_socket_channel: ^3.0.0
